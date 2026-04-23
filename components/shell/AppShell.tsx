@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, Bot } from "lucide-react";
+import { Menu, Bot, Mic } from "lucide-react";
 import { Board } from "@/components/board/Board";
 import { BoardTabs } from "./BoardTabs";
 import { CardDrawer } from "@/components/drawer/CardDrawer";
@@ -20,6 +20,7 @@ import { LanguageToggle } from "@/components/locale/LanguageToggle";
 import { MarqueeBar } from "@/components/shell/MarqueeBar";
 import { CelebrationGif } from "@/components/feedback/CelebrationGif";
 import { ChatPanel } from "@/components/chat/ChatPanel";
+import { VoiceModal } from "@/components/voice/VoiceModal";
 import { buildGifQuery, fetchRandomGif } from "@/lib/gif-service";
 import type { Card } from "@/shared/types";
 import { FEATURE_COLUMNS, BUG_COLUMNS } from "@/lib/constants";
@@ -34,6 +35,7 @@ export function AppShell() {
   const [addToColumn, setAddToColumn] = useState<string>("open");
   const [celebrationGif, setCelebrationGif] = useState<{ url: string; title: string; type: string } | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
+  const [voiceOpen, setVoiceOpen] = useState(false);
 
   const {
     appData, isLoading,
@@ -155,6 +157,19 @@ export function AppShell() {
             >
               <Bot className="h-4 w-4" />
             </button>
+            <button
+              onClick={() => setVoiceOpen((o) => !o)}
+              title="Voice assistant"
+              className={cn(
+                "h-7 w-7 flex items-center justify-center rounded-md transition-colors",
+                voiceOpen
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              )}
+              style={voiceOpen ? { background: "color-mix(in srgb, var(--primary) 20%, transparent)", color: "var(--primary)" } : undefined}
+            >
+              <Mic className="h-4 w-4" />
+            </button>
             <ThemeSheet />
           </div>
         </header>
@@ -245,6 +260,15 @@ export function AppShell() {
       <ChatPanel
         isOpen={chatOpen}
         onClose={() => setChatOpen(false)}
+        appData={appData}
+        activeEnvId={activeEnv?.id ?? null}
+        activeProjectId={activeProject?.id ?? null}
+        agentActions={agentActions}
+      />
+
+      <VoiceModal
+        isOpen={voiceOpen}
+        onClose={() => setVoiceOpen(false)}
         appData={appData}
         activeEnvId={activeEnv?.id ?? null}
         activeProjectId={activeProject?.id ?? null}

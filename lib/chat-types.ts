@@ -2,6 +2,7 @@ export interface GeminiPart {
   text?: string;
   functionCall?: { name: string; args: Record<string, unknown> };
   functionResponse?: { name: string; response: unknown };
+  inlineData?: { mimeType: string; data: string };
 }
 
 export interface GeminiContent {

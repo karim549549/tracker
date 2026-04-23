@@ -289,15 +289,26 @@ export interface AgentTurnResult {
   actions: ExecutedAction[];
 }
 
+export interface AttachmentForApi {
+  mimeType: string;
+  base64Data: string;
+}
+
 export async function runAgentTurn(
   history: GeminiContent[],
   userText: string,
   systemPrompt: string,
-  actions: AgentActions
+  actions: AgentActions,
+  attachments?: AttachmentForApi[]
 ): Promise<AgentTurnResult> {
+  const userParts: GeminiPart[] = [];
+  if (userText) userParts.push({ text: userText });
+  attachments?.forEach((a) => userParts.push({ inlineData: { mimeType: a.mimeType, data: a.base64Data } }));
+  if (!userParts.length) userParts.push({ text: "" });
+
   const newHistory: GeminiContent[] = [
     ...history,
-    { role: "user", parts: [{ text: userText }] },
+    { role: "user", parts: userParts },
   ];
 
   const executedActions: ExecutedAction[] = [];
